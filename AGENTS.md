@@ -34,7 +34,7 @@ can be sent upstream as is. `master` is only where the branches are combined.
 - Branch from `origin/master`, not from this fork's `master`:
   `git checkout -b <topic> origin/master`.
 - Only upstreamable changes go on a topic branch: decoder code and its docs.
-  Fork-only files such as this `AGENTS.md` stay on `master`.
+  Fork-only files such as this `AGENTS.md` and `README.md` stay on `master`.
 - Commit to the topic branch first, push it, then merge it into `master` with
   `--no-ff` and push `master`. Both must always carry the same decoder
   changes.
@@ -52,6 +52,18 @@ git checkout master                      # tracks fork/master
 git merge origin/master
 git push fork master
 ```
+
+`master` replaces upstream's plain-text `README` with `README.md`. If an
+upstream merge conflicts on `README` (modify/delete), keep it deleted and
+carry anything worth having into `README.md`.
+
+## AUR package
+
+`libsigrokdecode-nemanjan00-git` builds this repo's `master` and replaces
+`libsigrokdecode`/`libsigrokdecode-git`. Its packaging repo is
+`ssh://aur@aur.archlinux.org/libsigrokdecode-nemanjan00-git.git` (AUR
+account key `~/.ssh/aur_deploy`). It's the companion of
+`libsigrok-nemanjan00-git`.
 
 ## Commit conventions
 
