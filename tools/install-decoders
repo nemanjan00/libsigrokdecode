@@ -39,6 +39,23 @@ def _install_pretty_print(item):
         _inst_pp_col = len(item)
     print(item, end = "")
 
+def subpackage_files(pd_dir, rel=''):
+    """List the .py files of Python subpackages (directories with an
+    __init__.py) below a decoder, as paths relative to the decoder."""
+    files = []
+    for d in sorted(os.listdir(os.path.join(pd_dir, rel) if rel else pd_dir)):
+        sub = os.path.join(rel, d) if rel else d
+        sub_dir = os.path.join(pd_dir, sub)
+        if not os.path.isdir(sub_dir) or d == '__pycache__':
+            continue
+        if not os.path.isfile(os.path.join(sub_dir, '__init__.py')):
+            continue
+        for f in sorted(os.listdir(sub_dir)):
+            if f[-3:] == '.py' and os.path.isfile(os.path.join(sub_dir, f)):
+                files.append(os.path.join(sub, f))
+        files.extend(subpackage_files(pd_dir, sub))
+    return files
+
 def install(srcdir, dstdir, s):
     worklist = []
     for pd in os.listdir(srcdir):
@@ -55,6 +72,7 @@ def install(srcdir, dstdir, s):
             elif f[-3:] == '.py':
                 install_list.append(f)
         if install_list:
+            install_list.extend(subpackage_files(pd_dir))
             worklist.append((pd, pd_dir, install_list))
 
     worklist.sort()
@@ -70,7 +88,9 @@ def install(srcdir, dstdir, s):
             else:
                 pass
         for f in install_list:
-            copy(os.path.join(pd_dir, f), pd_dst)
+            f_dst = os.path.join(pd_dst, os.path.dirname(f))
+            os.makedirs(f_dst, exist_ok=True)
+            copy(os.path.join(pd_dir, f), f_dst)
     print()
     _install_pretty_print(None)
 
